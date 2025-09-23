@@ -8,7 +8,7 @@ from dependency_injector.wiring import Provide, inject
 from bases import base_http_client
 from bases.repositories import base_horoscope_repository
 from bases.services import horoscope_service
-from dto import http_dto, prediction_dto, user_dto
+from dto import http_dto, prediction_dto
 from tools import const
 from tools.di_containers import integration_container, alchemy_container
 
@@ -25,6 +25,7 @@ class HoroscopeService(horoscope_service.HoroscopeService):
         ],  # noqa
     ) -> str:
         logger.info("Получение гороскопа")
+        date = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=3)
 
         async with http_client as client:
             response = await client.get(
@@ -35,7 +36,7 @@ class HoroscopeService(horoscope_service.HoroscopeService):
                     },
                     query_params={
                         "sign": const.horoscope_integration_signs[sign],
-                        "day": "TODAY"
+                        "day": date.strftime("%Y-%m-%d")
                     }
                 )
             )

@@ -2,8 +2,7 @@ from aiogram import Router, F
 from aiogram.types import Message
 from dependency_injector.wiring import inject, Provide
 
-from api.handlers import index_handler
-from api.tools import filters
+from api.tools import filters, keyboards
 from bases.services import gigachat_llm_service, horoscope_service, user_service
 from tools.di_containers import service_container
 
@@ -24,21 +23,31 @@ async def cmd_horoscope(
         service_container.ServiceContainer.gigachat_service
     ],  # noqa
 ):
+    is_registered = await filters.RegisteredUserFilter()(message, with_message=False)
+
     user_id = message.from_user.id
     date = message.date.date()
     user_in_db = await user_service_.get_user(user_id)
 
     await message.answer(text="🔮")
-    await message.answer(text="Предсказываю...")
+    await message.answer(text="Посмотрим, что говорят звезды...")
 
     horoscope_in_db = await horoscope_service_.get_horoscope(user_id, date)
 
     if horoscope_in_db:
-        return await message.answer(text=horoscope_in_db.predict)
+        await message.answer(text=horoscope_in_db.predict)
+
+        return await message.answer(
+            text="С тобой был бот IT-гороскопа\nВозвращайся завтра 😉",
+            reply_markup=keyboards.get_main_inline_keyboard(is_registered=is_registered)
+        )
 
     original_horoscope = await horoscope_service_.get_today_horoscope(user_in_db.sign)
     result = await llm_service_.generate_horoscope(user_in_db, original_horoscope, date)
     await horoscope_service_.save_today_horoscope(user_id, result, date)
-
     await message.answer(text=result)
-    return await index_handler.cmd_start(message)
+
+    return await message.answer(
+        text="С тобой был бот IT-гороскопа\nВозвращайся завтра 😉",
+        reply_markup=keyboards.get_main_inline_keyboard(is_registered=is_registered)
+    )

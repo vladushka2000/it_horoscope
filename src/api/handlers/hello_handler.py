@@ -3,7 +3,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 from dependency_injector.wiring import inject, Provide
 
-from api.handlers import index_handler
 from api.states import registration_state
 from api.tools import filters, keyboards
 from bases.services import user_service
@@ -34,11 +33,24 @@ async def cmd_hello(
 
         return
 
+    await message.answer(text="Для начала узнаем твое имя...")
+    await state.set_state(registration_state.Registration.setting_name)
+
+
+@router.message(registration_state.Registration.setting_name)
+async def name_set(message: Message, state: FSMContext):
+    await state.update_data(full_name=message.text)
     await message.answer(
-        text="Для начала выбери свой знак зодиака ✨",
+        text=f"Приятно познакомиться, {message.text}!\n"
+             f"Теперь определимся с твоим знаком зодиака ✨",
         reply_markup=keyboards.make_keyboard([sign.value for sign in const.Sign], is_column=True)
     )
     await state.set_state(registration_state.Registration.choosing_sign)
+
+
+@router.message(registration_state.Registration.setting_name)
+async def name_chosen_incorrectly(message: Message):
+    await message.answer(text="Хм, не могу выговорить...\nПопробуй еще раз")
 
 
 @router.message(registration_state.Registration.choosing_sign, F.text.in_(const.Sign))
@@ -46,7 +58,7 @@ async def sign_chosen(message: Message, state: FSMContext):
     await state.update_data(sign=message.text)
     await message.answer(
         text=f"Ты {message.text.lower()}!\n"
-             f"Теперь определимся с твоей должностью 💼",
+             f"Выбери свою должность 💼",
         reply_markup=keyboards.make_keyboard([role.value for role in const.CompanyRole], is_column=True)
     )
     await state.set_state(registration_state.Registration.choosing_company_role)
@@ -95,14 +107,14 @@ async def emoji_chosen(
 ):
     await state.update_data(emoji=message.text)
     await message.answer(
-        text="Вот мы и познакомились! 🎉",
-        reply_markup=ReplyKeyboardRemove()
+        text="Вот мы и познакомились 🔥",
+        reply_markup=keyboards.get_main_inline_keyboard(is_registered=True)
     )
 
     user_data = await state.get_data()
     user = user_dto.UserDTO(
         id=message.from_user.id,
-        full_name=message.from_user.full_name,
+        full_name=user_data["full_name"],
         sign=user_data["sign"],
         company_role=user_data["company_role"],
         emoji=user_data["emoji"]
@@ -110,8 +122,6 @@ async def emoji_chosen(
 
     await user_service_.create_user(user)
     await state.clear()
-
-    await index_handler.cmd_start(message)
 
 
 @router.message(registration_state.Registration.choosing_emoji)
@@ -134,12 +144,13 @@ async def cmd_profile(
     user_id = message.from_user.id
     user_in_db = await user_service_.get_user(user_id)
 
+    is_registered = await filters.RegisteredUserFilter()(message, with_message=True if user_in_db else False)
+
     await message.answer(
-        text=f"Твои данные:\n"
+        text=f"Твой вайб-профиль\n"
              f"👤Имя - {user_in_db.full_name}\n"
              f"💫 Знак зодиака - {user_in_db.sign.value}\n"
              f"💼 Должность - {user_in_db.company_role.value}\n"
-             f"❤️ Личное emoji - {user_in_db.emoji}\n"
+             f"❤️ Любимое emoji - {user_in_db.emoji}\n",
+        reply_markup=keyboards.get_main_inline_keyboard(is_registered=is_registered)
     )
-
-    await index_handler.cmd_start(message)

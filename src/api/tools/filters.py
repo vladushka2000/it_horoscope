@@ -33,7 +33,9 @@ class RegisteredUserFilter(Filter):
         user_in_db = await user_service_.get_user(user_id)
 
         if with_message and user_in_db is None:
-            await message.answer(text="Кажется мы еще не знакомы...\nЗарегистрируйся по кнопке ниже")
+            await message.answer(
+                text="Кажется мы еще не знакомы...\nЗарегистрируйся по кнопке ниже",
+            )
 
         return user_in_db is not None
 
