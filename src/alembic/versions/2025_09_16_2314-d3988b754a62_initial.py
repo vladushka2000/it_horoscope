@@ -25,7 +25,7 @@ def upgrade() -> None:
     sa.Column('id', sa.BigInteger(), nullable=False, comment='ID пользователя'),
     sa.Column('full_name', sa.String(), nullable=True, comment='Полное имя'),
     sa.Column('sign', sa.Enum('ARIES', 'TAURUS', 'GEMINI', 'CANCE', 'LEO', 'VIRGO', 'LIBRA', 'SCORPIO', 'SAGITTARIUS', 'CAPRICORN', 'AQUARIUS', 'PISCES', name='sign'), nullable=False, comment='Знак зодиака'),
-    sa.Column('company_role', sa.Enum('SYS_ANALYST', 'BUSINESS_ANALYST', 'ARCHITECT', 'BACKEND', 'FRONTEND', 'DESIGNER', 'QA_ENGINEER', 'DEVOPS_ENGINEER', name='companyrole'), nullable=False, comment='Роль в компании'),
+    sa.Column('company_role', sa.Enum('SYS_ANALYST', 'BUSINESS_ANALYST', 'ARCHITECT', 'BACKEND', 'FRONTEND', 'DESIGNER', 'QA_ENGINEER', 'DEVOPS_ENGINEER', 'CLIENT', 'DATA_SCIENTIST', 'TEAM_LEAD', 'MANAGER', 'DB_SPECIALIST',  name='companyrole'), nullable=False, comment='Роль в компании'),
     sa.Column('emoji', sa.String(length=128), nullable=False, comment='HTML-код emoji'),
     sa.PrimaryKeyConstraint('id')
     )

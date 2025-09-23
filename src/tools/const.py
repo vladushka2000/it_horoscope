@@ -39,14 +39,19 @@ horoscope_integration_signs = {
 
 
 class CompanyRole(enum.Enum):
-    SYS_ANALYST = "Аналитик"
-    BUSINESS_ANALYST = "Бизнесс-аналитик"
+    SYS_ANALYST = "Системный аналитик"
+    BUSINESS_ANALYST = "Бизнес-аналитик"
     ARCHITECT = "Архитектор"
     BACKEND = "Разработчик backend"
     FRONTEND = "Разработчик frontend"
     DESIGNER = "Дизайнер"
     QA_ENGINEER = "Тестировщик"
     DEVOPS_ENGINEER = "Инженер DevOps"
+    CLIENT = "Заказчик"
+    DATA_SCIENTIST = "Data Scientist"
+    TEAM_LEAD = "Team Lead"
+    MANAGER = "Менеджер"
+    DB_SPECIALIST = "Специалист по работе с БД"
 
 
 class LLMProvider(enum.Enum):
