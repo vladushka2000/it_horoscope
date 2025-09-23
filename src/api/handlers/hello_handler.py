@@ -137,9 +137,9 @@ async def cmd_profile(
     await message.answer(
         text=f"Твои данные:\n"
              f"👤Имя - {user_in_db.full_name}\n"
-             f"{user_in_db.sign.value} - твой знак зодиака\n"
+             f"💫 Знак зодиака - {user_in_db.sign.value}\n"
              f"💼 Должность - {user_in_db.company_role.value}\n"
-             f"{user_in_db.emoji} - твое личное emoji\n"
+             f"❤️ Личное emoji - {user_in_db.emoji}\n"
     )
 
     await index_handler.cmd_start(message)
