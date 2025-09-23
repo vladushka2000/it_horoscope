@@ -36,7 +36,10 @@ async def cmd_start(message: Message):
     is_registered = await filters.RegisteredUserFilter()(message, with_message=False)
 
     await message.answer(
-        text="Сделаем предсказание на день?)",
+        text="""
+            Это бот IT-гороскопа!
+            Сделаем предсказание на день?)
+        """,
         reply_markup=keyboards.get_main_inline_keyboard(is_registered=is_registered),
         parse_mode="Markdown"
     )
