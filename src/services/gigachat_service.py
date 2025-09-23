@@ -115,7 +115,7 @@ class GigaChatService(gigachat_llm_service.GigaChatLLMService):
                 english_horoscope=english_horoscope,
                 current_date=f"{date.day} {const.russian_months[date.month]}",
                 emoji=user.emoji,
-                role=user.company_role,
+                role=user.company_role.value,
                 user_name=user.full_name,
                 sign=user.sign.value
             )
